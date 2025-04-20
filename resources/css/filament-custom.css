@@ -1,0 +1,6 @@
+/* Custom Filament Styles */
+
+/* Login Page Logo Size Override */
+.fi-auth-card-header .fi-logo {
+    max-height: 60px !important; /* Ajusta este valor según necesites */
+}

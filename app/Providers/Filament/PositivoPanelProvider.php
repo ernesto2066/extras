@@ -17,6 +17,9 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Widgets\ActivityChartWidget;
+use App\Filament\Widgets\TowerActivityWidget;
+use App\Filament\Widgets\ClientActivityWidget;
 
 class PositivoPanelProvider extends PanelProvider
 {
@@ -27,8 +30,29 @@ class PositivoPanelProvider extends PanelProvider
             ->id('positivo')
             ->path('positivo')
             ->login()
+            ->brandName('Positivo')
+            ->brandLogo(asset('images/positivos-logo.png'))
+            ->favicon(asset('images/positivos-logo.png'))
+            ->sidebarCollapsibleOnDesktop()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => [
+                    50 => '#f0fdf4',
+                    100 => '#dcfce7',
+                    200 => '#bbf7d0',
+                    300 => '#86efac',
+                    400 => '#4ade80',
+                    500 => '#22c55e',
+                    600 => '#16a34a',
+                    700 => '#15803d',
+                    800 => '#166534',
+                    900 => '#14532d',
+                    950 => '#052e16',
+                ],
+                'danger' => Color::Rose,
+                'gray' => Color::Slate,
+                'info' => Color::Blue,
+                'success' => Color::Emerald,
+                'warning' => Color::Orange,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -38,7 +62,9 @@ class PositivoPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                ActivityChartWidget::class,
+                TowerActivityWidget::class,
+                ClientActivityWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
