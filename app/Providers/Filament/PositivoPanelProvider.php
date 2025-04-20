@@ -81,4 +81,10 @@ class PositivoPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
     }
+    public function gate(): void
+    {
+        \Illuminate\Support\Facades\Gate::define('viewFilament', function (\App\Models\User $user) {
+            return true;
+        });
+    }
 }
