@@ -77,6 +77,7 @@ El sistema de aprobación de horas extras está diseñado siguiendo una arquitec
 2. Al enviar el formulario, se crea un nuevo registro en la tabla `actividads`
 3. El campo `estado` se establece automáticamente como "pendiente"
 4. Se almacena el email de notificación proporcionado por el empleado
+5. Se envía una notificación por correo electrónico al solicitante confirmando el registro
 
 **Código relevante** (método save en `ExtraHoursForm.php`):
 ```php
@@ -88,6 +89,19 @@ $actividad = Actividad::create([
     // ... otros campos ...
     'estado' => Actividad::ESTADO_PENDIENTE,
 ]);
+
+// Enviar notificación por correo electrónico
+if ($this->email_notificacion) {
+    try {
+        $notifiable = new AnonymousNotifiable;
+        $notifiable->route('mail', $this->email_notificacion);
+        $notifiable->notify(new HoraExtraRegistrada($actividad));
+        
+        Log::info('Notificación enviada a: ' . $this->email_notificacion);
+    } catch (\Exception $e) {
+        Log::error('Error al enviar la notificación: ' . $e->getMessage());
+    }
+}
 ```
 
 ### 2. Aprobación/Rechazo por Coordinador
@@ -135,12 +149,17 @@ El sistema utiliza Laravel Notifications para enviar correos electrónicos a los
 
 ### Clases de Notificación
 
-1. **HoraExtraAprobada**
+1. **HoraExtraRegistrada**
+   - Enviada inmediatamente cuando se registra una nueva solicitud de hora extra
+   - Incluye detalles de la hora extra registrada (ID, fecha, horario)
+   - Informa al solicitante que su solicitud está pendiente de revisión
+
+2. **HoraExtraAprobada**
    - Enviada cuando una solicitud es aprobada (por coordinador o final)
    - Incluye detalles de la hora extra y cualquier comentario
    - Personaliza el mensaje según nivel de aprobación (coordinador/final)
 
-2. **HoraExtraRechazada**
+3. **HoraExtraRechazada**
    - Enviada cuando una solicitud es rechazada (por coordinador o final)
    - Incluye motivo del rechazo y detalles de la solicitud
    - Personaliza el mensaje según nivel de rechazo (coordinador/final)

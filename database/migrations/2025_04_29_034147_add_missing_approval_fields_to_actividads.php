@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('actividads', function (Blueprint $table) {
+            //
             $table->string('email_notificacion')->nullable()->after('nombre_completo');
             $table->enum('estado', ['pendiente', 'aprobada_coordinador', 'rechazada_coordinador', 'aprobada_final', 'rechazada_final'])
                 ->default('pendiente')
@@ -28,6 +29,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('actividads', function (Blueprint $table) {
+            //
             $table->dropColumn(['email_notificacion', 'estado', 'comentarios', 'aprobador_id', 'fecha_aprobacion']);
         });
     }

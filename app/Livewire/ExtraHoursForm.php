@@ -2,10 +2,13 @@
 
 namespace App\Livewire;
 
+use App\Models\Actividad;
 use App\Models\JefeInmediato;
 use App\Models\TipoCaso;
 use App\Models\Torre;
-use App\Models\Actividad;
+use App\Notifications\HoraExtraRegistrada;
+use Illuminate\Notifications\AnonymousNotifiable;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\Attributes\Rule;
 use Carbon\Carbon;
@@ -68,7 +71,6 @@ class ExtraHoursForm extends Component
         $actividad = Actividad::create([
             'documento_identidad' => $this->documento_identidad,
             'nombre_completo' => $this->nombre_completo,
-            'email_notificacion' => $this->email_notificacion,
             'torre_id' => $this->torre_id,
             'tipo_caso_id' => $this->tipo_caso_id,
             'numero_casos' => $this->numero_casos,
@@ -78,11 +80,25 @@ class ExtraHoursForm extends Component
             'fecha_ejecucion' => $this->fecha_ejecucion,
             'hora_inicio' => $this->hora_inicio,
             'hora_fin' => $this->hora_fin,
+            'email_notificacion' => $this->email_notificacion,
             'estado' => Actividad::ESTADO_PENDIENTE,
         ]);
 
         // Store the ID of the newly created activity
         $this->lastActivityId = $actividad->id;
+        
+        // Enviar notificación por correo electrónico
+        if ($this->email_notificacion) {
+            try {
+                $notifiable = new AnonymousNotifiable;
+                $notifiable->route('mail', $this->email_notificacion);
+                $notifiable->notify(new HoraExtraRegistrada($actividad));
+                
+                Log::info('Notificación enviada a: ' . $this->email_notificacion);
+            } catch (\Exception $e) {
+                Log::error('Error al enviar la notificación: ' . $e->getMessage());
+            }
+        }
         
         session()->flash('message', 'Hora extra con el consecutivo #' . $this->lastActivityId . ' registrada con éxito en la base de datos.');
 

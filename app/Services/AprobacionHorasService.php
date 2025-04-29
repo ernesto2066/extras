@@ -8,6 +8,7 @@ use App\Notifications\AnonymousNotifiable;
 use App\Notifications\HoraExtraAprobada;
 use App\Notifications\HoraExtraRechazada;
 use Carbon\Carbon;
+use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 
@@ -148,6 +149,13 @@ class AprobacionHorasService
         $notifiable->route('mail', $actividad->email_notificacion);
         
         Notification::send($notifiable, new HoraExtraAprobada($actividad, $nivel));
+        
+        // Mensaje de confirmación visual con Filament
+        FilamentNotification::make()
+            ->title('Correo enviado')
+            ->body('Notificación de aprobación enviada a: ' . $actividad->email_notificacion)
+            ->success()
+            ->send();
     }
 
     /**
@@ -159,5 +167,12 @@ class AprobacionHorasService
         $notifiable->route('mail', $actividad->email_notificacion);
         
         Notification::send($notifiable, new HoraExtraRechazada($actividad, $nivel));
+        
+        // Mensaje de confirmación visual con Filament
+        FilamentNotification::make()
+            ->title('Correo enviado')
+            ->body('Notificación de rechazo enviada a: ' . $actividad->email_notificacion)
+            ->success()
+            ->send();
     }
 }

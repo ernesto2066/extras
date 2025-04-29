@@ -204,10 +204,10 @@ class ActividadResource extends Resource
                         $service->aprobarPorCoordinador($record, $data['comentarios'] ?? null);
                     })
                     ->successNotification(
-                        notification: fn(): Filament\Notifications\Notification => Filament\Notifications\Notification::make()
+                        notification: fn(Actividad $record): Filament\Notifications\Notification => Filament\Notifications\Notification::make()
                             ->success()
                             ->title('Hora Extra Aprobada')
-                            ->body('La hora extra ha sido aprobada correctamente por Coordinador. Se ha enviado una notificación al solicitante.')
+                            ->body('La hora extra ha sido aprobada correctamente por Coordinador. Se ha enviado una notificación a: ' . $record->email_notificacion)
                     )
                     ->visible(fn (Actividad $record): bool => 
                         $record->puedeSerAprobadaPorCoordinador() && 
@@ -232,10 +232,10 @@ class ActividadResource extends Resource
                         $service->rechazarPorCoordinador($record, $data['comentarios']);
                     })
                     ->successNotification(
-                        notification: fn(): Filament\Notifications\Notification => Filament\Notifications\Notification::make()
+                        notification: fn(Actividad $record): Filament\Notifications\Notification => Filament\Notifications\Notification::make()
                             ->success()
                             ->title('Hora Extra Rechazada')
-                            ->body('La hora extra ha sido rechazada por Coordinador. Se ha enviado una notificación al solicitante.')
+                            ->body('La hora extra ha sido rechazada por Coordinador. Se ha enviado una notificación a: ' . $record->email_notificacion)
                     )
                     ->visible(fn (Actividad $record): bool => 
                         $record->puedeSerAprobadaPorCoordinador() && 
@@ -259,10 +259,10 @@ class ActividadResource extends Resource
                         $service->aprobarFinal($record, $data['comentarios'] ?? null);
                     })
                     ->successNotification(
-                        notification: fn(): Filament\Notifications\Notification => Filament\Notifications\Notification::make()
+                        notification: fn(Actividad $record): Filament\Notifications\Notification => Filament\Notifications\Notification::make()
                             ->success()
                             ->title('Hora Extra Aprobada')
-                            ->body('La hora extra ha sido aprobada definitivamente. Se ha enviado una notificación al solicitante.')
+                            ->body('La hora extra ha sido aprobada definitivamente. Se ha enviado una notificación a: ' . $record->email_notificacion)
                     )
                     ->visible(fn (Actividad $record): bool => 
                         $record->puedeSerAprobadaPorAdministrador() && 
@@ -287,10 +287,10 @@ class ActividadResource extends Resource
                         $service->rechazarFinal($record, $data['comentarios']);
                     })
                     ->successNotification(
-                        notification: fn(): Filament\Notifications\Notification => Filament\Notifications\Notification::make()
+                        notification: fn(Actividad $record): Filament\Notifications\Notification => Filament\Notifications\Notification::make()
                             ->success()
                             ->title('Hora Extra Rechazada')
-                            ->body('La hora extra ha sido rechazada definitivamente. Se ha enviado una notificación al solicitante.')
+                            ->body('La hora extra ha sido rechazada definitivamente. Se ha enviado una notificación a: ' . $record->email_notificacion)
                     )
                     ->visible(fn (Actividad $record): bool => 
                         $record->puedeSerAprobadaPorAdministrador() && 
