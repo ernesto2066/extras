@@ -3,9 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Actividad extends Model
+class Actividad extends Model implements Auditable
 {
+    use AuditableTrait;
+    
+    /**
+     * Atributos que deben ser auditados
+     */
+    protected $auditInclude = [
+        'estado',
+        'comentarios',
+        'aprobador_id',
+        'fecha_aprobacion'
+    ];
+    
     protected $table = 'actividads';
     
     protected $fillable = [

@@ -28,6 +28,11 @@ class AprobacionHorasService
             return false;
         }
 
+        // Guardar datos originales para enviar notificación
+        $emailNotificacion = $actividad->email_notificacion;
+        $nombreCompleto = $actividad->nombre_completo;
+
+        // Actualizar actividad
         $actividad->estado = Actividad::ESTADO_APROBADA_COORDINADOR;
         $actividad->comentarios = $comentarios;
         $actividad->aprobador_id = Auth::id();
@@ -35,7 +40,9 @@ class AprobacionHorasService
         $actividad->save();
 
         // Enviar notificación si hay email de notificación
-        if ($actividad->email_notificacion) {
+        if ($emailNotificacion) {
+            // Refrescar el modelo para tener datos actualizados
+            $actividad->refresh();
             $this->enviarNotificacionAprobacion($actividad, 'coordinador');
         }
 
@@ -56,6 +63,11 @@ class AprobacionHorasService
             return false;
         }
 
+        // Guardar datos originales para enviar notificación
+        $emailNotificacion = $actividad->email_notificacion;
+        $nombreCompleto = $actividad->nombre_completo;
+        
+        // Actualizar actividad
         $actividad->estado = Actividad::ESTADO_RECHAZADA_COORDINADOR;
         $actividad->comentarios = $comentarios;
         $actividad->aprobador_id = Auth::id();
@@ -63,7 +75,9 @@ class AprobacionHorasService
         $actividad->save();
 
         // Enviar notificación si hay email de notificación
-        if ($actividad->email_notificacion) {
+        if ($emailNotificacion) {
+            // Refrescar el modelo para tener datos actualizados
+            $actividad->refresh();
             $this->enviarNotificacionRechazo($actividad, 'coordinador');
         }
 
@@ -84,6 +98,11 @@ class AprobacionHorasService
             return false;
         }
 
+        // Guardar datos originales para enviar notificación
+        $emailNotificacion = $actividad->email_notificacion;
+        $nombreCompleto = $actividad->nombre_completo;
+        
+        // Actualizar actividad
         $actividad->estado = Actividad::ESTADO_APROBADA_FINAL;
         
         // Si hay comentarios nuevos, actualizar o añadir
@@ -98,7 +117,9 @@ class AprobacionHorasService
         $actividad->save();
 
         // Enviar notificación si hay email de notificación
-        if ($actividad->email_notificacion) {
+        if ($emailNotificacion) {
+            // Refrescar el modelo para tener datos actualizados
+            $actividad->refresh();
             $this->enviarNotificacionAprobacion($actividad, 'final');
         }
 
@@ -119,6 +140,11 @@ class AprobacionHorasService
             return false;
         }
 
+        // Guardar datos originales para enviar notificación
+        $emailNotificacion = $actividad->email_notificacion;
+        $nombreCompleto = $actividad->nombre_completo;
+        
+        // Actualizar actividad
         $actividad->estado = Actividad::ESTADO_RECHAZADA_FINAL;
         
         // Si hay comentarios nuevos, actualizar o añadir
@@ -133,7 +159,9 @@ class AprobacionHorasService
         $actividad->save();
 
         // Enviar notificación si hay email de notificación
-        if ($actividad->email_notificacion) {
+        if ($emailNotificacion) {
+            // Refrescar el modelo para tener datos actualizados
+            $actividad->refresh();
             $this->enviarNotificacionRechazo($actividad, 'final');
         }
 

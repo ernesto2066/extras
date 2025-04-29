@@ -104,7 +104,10 @@ return [
             explode(',', env('APP_PREVIOUS_KEYS', ''))
         ),
     ],
-
+    /*
+    'providers' => [
+        OwenIt\Auditing\AuditingServiceProvider::class,
+    ],*/
     /*
     |--------------------------------------------------------------------------
     | Maintenance Mode Driver
