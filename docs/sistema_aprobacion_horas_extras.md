@@ -189,7 +189,9 @@ class AnonymousNotifiable
 }
 ```
 
-Uso en el servicio de aprobación:
+### Servicio de Aprobación
+
+El servicio principal para gestionar las aprobaciones y envío de notificaciones:
 
 ```php
 private function enviarNotificacionAprobacion(Actividad $actividad, string $nivel): void
@@ -198,6 +200,46 @@ private function enviarNotificacionAprobacion(Actividad $actividad, string $nive
     $notifiable->route('mail', $actividad->email_notificacion);
     
     Notification::send($notifiable, new HoraExtraAprobada($actividad, $nivel));
+    
+    // Notificación visual en la interfaz
+    FilamentNotification::make()
+        ->title('Correo enviado')
+        ->body('Notificación de aprobación enviada a: ' . $actividad->email_notificacion)
+        ->success()
+        ->send();
+}
+```
+
+### Extensión del Formulario de Edición
+
+Para capturar cambios de estado realizados directamente desde el formulario de edición de Filament, se ha extendido la clase `EditActividad`:
+
+```php
+// Sobrescritura del método save para detectar cambios de estado
+public function save(bool $shouldRedirect = true, bool $shouldSendSavedNotification = true): void
+{
+    try {
+        // Guardar estado actual antes de actualizar
+        $estadoAnterior = $this->record->estado ?? Actividad::ESTADO_PENDIENTE;
+        $emailNotificacion = $this->record->email_notificacion;
+        
+        // Guardar normalmente
+        parent::save($shouldRedirect, $shouldSendSavedNotification);
+        
+        // Refrescar registro
+        $this->record->refresh();
+        
+        // Verificar cambio de estado
+        $nuevoEstado = $this->record->estado;
+        
+        if ($nuevoEstado !== $estadoAnterior && $nuevoEstado !== Actividad::ESTADO_PENDIENTE) {
+            // Actualizar aprobador y fecha si necesario
+            // Enviar notificación correspondiente según tipo de cambio
+            // Mostrar confirmación visual
+        }
+    } catch (\Exception $e) {
+        Log::error('Error al procesar formulario: ' . $e->getMessage());
+    }
 }
 ```
 
@@ -219,6 +261,11 @@ El recurso `ActividadResource` ha sido mejorado con:
 
 3. **Filtros de Vista**
    - Filtros por estado para facilitar la gestión
+   
+4. **Confirmación Visual de Envío de Correos**
+   - Notificaciones visibles cuando se envía un correo al solicitante
+   - Muestra explícitamente la dirección de correo destino en la notificación
+   - Funciona tanto para acciones específicas como para cambios de estado vía formulario
 
 ### Formulario Público
 
