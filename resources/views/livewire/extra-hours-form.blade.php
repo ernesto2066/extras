@@ -33,7 +33,7 @@
             @csrf
 
             {{-- Flujo de pasos con Alpine.js --}}
-            <div x-data="{ currentStep: 1 }">
+            <div x-data="{ currentStep: @entangle('currentStep') }" @reset-to-step1.window="currentStep = 1">
 
                 {{-- Indicadores de Pasos --}}
                 <div class="mb-6 border-b border-gray-300">
@@ -72,6 +72,16 @@
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm @error('nombre_completo') border-red-500 @enderror" {{-- Color foco verde --}}
                                        placeholder="Escriba su respuesta">
                                 @error('nombre_completo') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
+                            </div>
+                            
+                            <!-- Email de Notificación -->
+                            <div>
+                                <label for="email_notificacion" class="block text-sm font-medium text-gray-700">Email para Notificaciones <span class="text-red-600">*</span></label>
+                                <input type="email" wire:model.lazy="email_notificacion" id="email_notificacion" {{-- Usar .lazy --}}
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm @error('email_notificacion') border-red-500 @enderror" {{-- Color foco verde --}}
+                                       placeholder="ejemplo@correo.com">
+                                <p class="mt-1 text-xs text-gray-500">A este correo se enviarán las notificaciones sobre la aprobación de sus horas extras</p>
+                                @error('email_notificacion') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
                             </div>
 
                             <!-- Jefe Inmediato -->

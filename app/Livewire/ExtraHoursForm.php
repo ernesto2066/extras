@@ -41,6 +41,9 @@ class ExtraHoursForm extends Component
 
     #[Rule('required|string|max:20')]
     public $documento_identidad = '';
+    
+    #[Rule('required|email|max:255')]
+    public $email_notificacion = '';
 
     #[Rule('required|string|max:255')]
     public $nombre_completo = '';
@@ -49,6 +52,9 @@ class ExtraHoursForm extends Component
     {
         $this->fecha_ejecucion = date('Y-m-d');
     }
+
+    public $currentStep = 1;
+    public $lastActivityId = null;
 
     public function save()
     {
@@ -59,9 +65,10 @@ class ExtraHoursForm extends Component
             return;
         }
 
-        Actividad::create([
+        $actividad = Actividad::create([
             'documento_identidad' => $this->documento_identidad,
             'nombre_completo' => $this->nombre_completo,
+            'email_notificacion' => $this->email_notificacion,
             'torre_id' => $this->torre_id,
             'tipo_caso_id' => $this->tipo_caso_id,
             'numero_casos' => $this->numero_casos,
@@ -71,10 +78,15 @@ class ExtraHoursForm extends Component
             'fecha_ejecucion' => $this->fecha_ejecucion,
             'hora_inicio' => $this->hora_inicio,
             'hora_fin' => $this->hora_fin,
+            'estado' => Actividad::ESTADO_PENDIENTE,
         ]);
 
-        session()->flash('message', 'Actividad registrada con éxito.');
+        // Store the ID of the newly created activity
+        $this->lastActivityId = $actividad->id;
+        
+        session()->flash('message', 'Hora extra con el consecutivo #' . $this->lastActivityId . ' registrada con éxito en la base de datos.');
 
+        // Reset form fields
         $this->reset([
             'torre_id', 
             'tipo_caso_id',
@@ -85,9 +97,16 @@ class ExtraHoursForm extends Component
             'fecha_ejecucion',
             'hora_inicio',
             'hora_fin',
-            'documento_identidad',
-            'nombre_completo',
         ]);
+        
+        // Do not reset personal information to make it easier to register multiple activities
+        // $this->reset(['documento_identidad', 'nombre_completo']);
+        
+        // Set the step back to 1 (personal information)
+        $this->currentStep = 1;
+        
+        // Emit an event to update Alpine.js state
+        $this->dispatch('resetToStep1');
     }
 
     public function render()
