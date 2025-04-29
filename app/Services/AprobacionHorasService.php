@@ -220,12 +220,29 @@ class AprobacionHorasService
                 'fecha_hora' => now()->toDateTimeString()
             ]);
             
-            // Mensaje de confirmación visual con Filament
-            FilamentNotification::make()
-                ->title('Correo enviado')
-                ->body('Notificación de aprobación enviada a: ' . $actividad->email_notificacion)
-                ->success()
-                ->send();
+            // Forzar mensaje de confirmación visual con Filament que funcione en cualquier ambiente
+            try {
+                FilamentNotification::make()
+                    ->title('Correo enviado')
+                    ->body('Notificación de aprobación enviada a: ' . $actividad->email_notificacion)
+                    ->success()
+                    ->persistent() // Para que no desaparezca rápidamente
+                    ->send();
+            } catch (\Exception $notificationException) {
+                // Si falla la notificación, intentamos otra vez con opciones más básicas
+                try {
+                    FilamentNotification::make()
+                        ->title('Información')
+                        ->body('Procesado correctamente')
+                        ->success()
+                        ->send();
+                } catch (\Exception $e) {
+                    // Registrar el error pero no interrumpir el flujo
+                    \Illuminate\Support\Facades\Log::error('Error al mostrar notificación visual', [
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
         } catch (\Exception $e) {
             // Registrar el error detalladamente
             \Illuminate\Support\Facades\Log::error('ERROR EN EL PROCESO: Error al enviar notificación de aprobación', [
@@ -304,12 +321,29 @@ class AprobacionHorasService
                 'fecha_hora' => now()->toDateTimeString()
             ]);
             
-            // Mensaje de confirmación visual con Filament
-            FilamentNotification::make()
-                ->title('Correo enviado')
-                ->body('Notificación de rechazo enviada a: ' . $actividad->email_notificacion)
-                ->success()
-                ->send();
+            // Forzar mensaje de confirmación visual con Filament que funcione en cualquier ambiente
+            try {
+                FilamentNotification::make()
+                    ->title('Correo enviado')
+                    ->body('Notificación de rechazo enviada a: ' . $actividad->email_notificacion)
+                    ->success()
+                    ->persistent() // Para que no desaparezca rápidamente
+                    ->send();
+            } catch (\Exception $notificationException) {
+                // Si falla la notificación, intentamos otra vez con opciones más básicas
+                try {
+                    FilamentNotification::make()
+                        ->title('Información')
+                        ->body('Procesado correctamente')
+                        ->success()
+                        ->send();
+                } catch (\Exception $e) {
+                    // Registrar el error pero no interrumpir el flujo
+                    \Illuminate\Support\Facades\Log::error('Error al mostrar notificación visual', [
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
         } catch (\Exception $e) {
             // Registrar el error detalladamente
             \Illuminate\Support\Facades\Log::error('ERROR EN EL PROCESO: Error al enviar notificación de rechazo', [

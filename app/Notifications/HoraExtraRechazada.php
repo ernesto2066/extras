@@ -22,6 +22,16 @@ class HoraExtraRechazada extends Notification implements ShouldQueue
     {
         $this->actividad = $actividad;
         $this->nivel = $nivel;
+        
+        // Log detallado al construir la notificación
+        \Illuminate\Support\Facades\Log::debug('HoraExtraRechazada::__construct - Notificación creada', [
+            'actividad_id' => $actividad->id,
+            'nivel' => $nivel,
+            'email' => $actividad->email_notificacion,
+            'driver_correo' => config('mail.default'),
+            'fecha_hora' => now()->toDateTimeString(),
+            'app_env' => config('app.env')
+        ]);
     }
 
     /**
@@ -31,6 +41,14 @@ class HoraExtraRechazada extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
+        // Log detallado del canal de envío
+        \Illuminate\Support\Facades\Log::debug('HoraExtraRechazada::via - Definiendo canales de envío', [
+            'canal' => 'mail',
+            'actividad_id' => $this->actividad->id,
+            'notifiable_type' => get_class($notifiable),
+            'fecha_hora' => now()->toDateTimeString()
+        ]);
+        
         return ['mail'];
     }
 
@@ -39,6 +57,14 @@ class HoraExtraRechazada extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
+        // Log detallado antes de generar el mensaje
+        \Illuminate\Support\Facades\Log::debug('HoraExtraRechazada::toMail - Generando mensaje de correo', [
+            'actividad_id' => $this->actividad->id,
+            'email_destino' => $notifiable->routes['mail'] ?? 'No especificado',
+            'driver_correo' => config('mail.default'),
+            'fecha_hora' => now()->toDateTimeString()
+        ]);
+        
         $etapa = $this->nivel === 'coordinador' ? 'por Coordinador' : 'Final';
         
         return (new MailMessage)
