@@ -84,16 +84,28 @@ class ActividadResource extends Resource
                 
                 Forms\Components\Section::make('Fecha y Horas')
                     ->schema([
-                        Forms\Components\DatePicker::make('fecha_ejecucion')
-                            ->required(),
-                        Forms\Components\TimePicker::make('hora_inicio')
-                            ->required()
-                            ->seconds(false),
-                        Forms\Components\TimePicker::make('hora_fin')
-                            ->required()
-                            ->seconds(false),
-                    ])
-                    ->columns(3),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Group::make([
+                                    Forms\Components\DatePicker::make('fecha_inicio')
+                                        ->label('Fecha de Inicio')
+                                        ->required(),
+                                    Forms\Components\TimePicker::make('hora_inicio')
+                                        ->label('Hora de Inicio')
+                                        ->required()
+                                        ->seconds(false),
+                                ])->columns(1),
+                                Forms\Components\Group::make([
+                                    Forms\Components\DatePicker::make('fecha_fin')
+                                        ->label('Fecha de Fin')
+                                        ->required(),
+                                    Forms\Components\TimePicker::make('hora_fin')
+                                        ->label('Hora de Fin')
+                                        ->required()
+                                        ->seconds(false),
+                                ])->columns(1),
+                            ]),
+                    ]),
                     
                 Forms\Components\Section::make('Estado y Aprobación')
                     ->schema([
@@ -110,7 +122,10 @@ class ActividadResource extends Resource
                             ->required(),
                         Forms\Components\Textarea::make('comentarios')
                             ->placeholder('Comentarios sobre la aprobación o rechazo')
-                            ->rows(3),
+                            ->rows(3)
+                            ->required(fn (callable $get): bool => $get('estado') !== Actividad::ESTADO_PENDIENTE)
+                            ->requiredWith('estado')
+                            ->helperText('Debe incluir un comentario al aprobar o rechazar las horas extras'),
                     ])
                     ->visibleOn('edit')
                     ->columns(2),
@@ -127,6 +142,30 @@ class ActividadResource extends Resource
                 Tables\Columns\TextColumn::make('nombre_completo')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('hora_inicio')
+                    ->time()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('hora_fin')
+                    ->time()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('duracion_horas')
+                    ->label('Duración (Horas)')
+                    ->state(function (Actividad $record): float {
+                        return $record->calcularDuracionHoras();
+                    })
+                    ->formatStateUsing(fn (float $state): string => number_format($state, 2) . ' h')
+                    ->color('success'),
+                    
+                Tables\Columns\TextColumn::make('tipo_hora_extra')
+                    ->label('Tipo')
+                    ->state(function (Actividad $record): string {
+                        return $record->getTipoHoraExtra();
+                    })
+                    ->badge()
+                    ->color(fn (string $state): string => $state === 'Festiva' ? 'warning' : 'primary')
+                    ->tooltip(function (Actividad $record): string {
+                        return $record->esDiaFestivo() ? 'Festivo o fin de semana' : 'Día hábil';
+                    }),
                 Tables\Columns\TextColumn::make('email_notificacion')
                     ->searchable()
                     ->sortable()
@@ -145,7 +184,12 @@ class ActividadResource extends Resource
                 Tables\Columns\TextColumn::make('cliente')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('fecha_ejecucion')
+                Tables\Columns\TextColumn::make('fecha_inicio')
+                    ->label('Fecha de Inicio')
+                    ->date('d/m/Y')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('fecha_fin')
+                    ->label('Fecha de Fin')
                     ->date('d/m/Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('hora_inicio')

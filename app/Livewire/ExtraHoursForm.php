@@ -34,7 +34,10 @@ class ExtraHoursForm extends Component
     public $jefe_inmediato_id;
     
     #[Rule('required|date')]
-    public $fecha_ejecucion;
+    public $fecha_inicio;
+    
+    #[Rule('required|date')]
+    public $fecha_fin;
     
     #[Rule('required|date_format:H:i')]
     public $hora_inicio;
@@ -53,7 +56,8 @@ class ExtraHoursForm extends Component
 
     public function mount()
     {
-        $this->fecha_ejecucion = date('Y-m-d');
+        $this->fecha_inicio = date('Y-m-d');
+        $this->fecha_fin = date('Y-m-d');
     }
 
     public $currentStep = 1;
@@ -63,8 +67,11 @@ class ExtraHoursForm extends Component
     {
         $this->validate();
 
-        if (Carbon::parse($this->hora_fin)->lte(Carbon::parse($this->hora_inicio))) {
-            session()->flash('warning', 'La hora de fin debe ser posterior a la hora de inicio.');
+        $fechaHoraInicio = Carbon::parse($this->fecha_inicio . ' ' . $this->hora_inicio);
+        $fechaHoraFin = Carbon::parse($this->fecha_fin . ' ' . $this->hora_fin);
+        
+        if ($fechaHoraFin->lte($fechaHoraInicio)) {
+            session()->flash('warning', 'La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio.');
             return;
         }
 
@@ -77,7 +84,8 @@ class ExtraHoursForm extends Component
             'descripcion' => $this->descripcion,
             'cliente' => $this->cliente,
             'jefe_inmediato_id' => $this->jefe_inmediato_id,
-            'fecha_ejecucion' => $this->fecha_ejecucion,
+            'fecha_inicio' => $this->fecha_inicio,
+            'fecha_fin' => $this->fecha_fin,
             'hora_inicio' => $this->hora_inicio,
             'hora_fin' => $this->hora_fin,
             'email_notificacion' => $this->email_notificacion,
@@ -110,7 +118,8 @@ class ExtraHoursForm extends Component
             'descripcion',  
             'cliente',
             'jefe_inmediato_id',
-            'fecha_ejecucion',
+            'fecha_inicio',
+            'fecha_fin',
             'hora_inicio',
             'hora_fin',
         ]);

@@ -180,31 +180,50 @@
                     {{-- Paso 3: Fecha y Horas --}}
                     <div x-show="currentStep === 3">
                         <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Fecha y Horas</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Fecha de Ejecución -->
-                            <div>
-                                <label for="fecha_ejecucion" class="block text-sm font-medium text-gray-700">Fecha de Ejecución <span class="text-red-600">*</span></label>
-                                <input type="date" wire:model.lazy="fecha_ejecucion" id="fecha_ejecucion" {{-- Usar .lazy --}}
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm @error('fecha_ejecucion') border-red-500 @enderror"> {{-- Color foco verde --}}
-                                @error('fecha_ejecucion') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
+                        <div class="grid grid-cols-1 gap-6">
+                            <!-- Inicio -->
+                            <div class="flex flex-col">
+                                <h4 class="text-md font-medium text-gray-800 mb-2">Inicio</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Fecha de Inicio -->
+                                    <div>
+                                        <label for="fecha_inicio" class="block text-sm font-medium text-gray-700">Fecha <span class="text-red-600">*</span></label>
+                                        <input type="date" wire:model.lazy="fecha_inicio" id="fecha_inicio" {{-- Usar .lazy --}}
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm @error('fecha_inicio') border-red-500 @enderror"> {{-- Color foco verde --}}
+                                        @error('fecha_inicio') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
+                                    </div>
+
+                                    <!-- Hora de Inicio -->
+                                    <div>
+                                        <label for="hora_inicio" class="block text-sm font-medium text-gray-700">Hora <span class="text-red-600">*</span></label>
+                                        <input type="time" wire:model.lazy="hora_inicio" id="hora_inicio" {{-- Usar .lazy --}}
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm @error('hora_inicio') border-red-500 @enderror"> {{-- Color foco verde --}}
+                                        @error('hora_inicio') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Hora de Inicio -->
-                            <div>
-                                <label for="hora_inicio" class="block text-sm font-medium text-gray-700">Hora de Inicio <span class="text-red-600">*</span></label>
-                                <input type="time" wire:model.lazy="hora_inicio" id="hora_inicio" {{-- Usar .lazy --}}
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm @error('hora_inicio') border-red-500 @enderror"> {{-- Color foco verde --}}
-                                @error('hora_inicio') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-                            </div>
+                            <!-- Fin -->
+                            <div class="flex flex-col">
+                                <h4 class="text-md font-medium text-gray-800 mb-2">Fin</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Fecha de Fin -->
+                                    <div>
+                                        <label for="fecha_fin" class="block text-sm font-medium text-gray-700">Fecha <span class="text-red-600">*</span></label>
+                                        <input type="date" wire:model.lazy="fecha_fin" id="fecha_fin" {{-- Usar .lazy --}}
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm @error('fecha_fin') border-red-500 @enderror"> {{-- Color foco verde --}}
+                                        @error('fecha_fin') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
+                                    </div>
 
-                            <!-- Hora de Fin -->
-                            <div>
-                                <label for="hora_fin" class="block text-sm font-medium text-gray-700">Hora de Fin <span class="text-red-600">*</span></label>
-                                <input type="time" wire:model.lazy="hora_fin" id="hora_fin" {{-- Usar .lazy --}}
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm @error('hora_fin') border-red-500 @enderror"> {{-- Color foco verde --}}
-                                @error('hora_fin') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
+                                    <!-- Hora de Fin -->
+                                    <div>
+                                        <label for="hora_fin" class="block text-sm font-medium text-gray-700">Hora <span class="text-red-600">*</span></label>
+                                        <input type="time" wire:model.lazy="hora_fin" id="hora_fin" {{-- Usar .lazy --}}
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm @error('hora_fin') border-red-500 @enderror"> {{-- Color foco verde --}}
+                                        @error('hora_fin') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
                             </div>
-                        </div>
                          {{-- Botón Anterior y Guardar (Paso 3) --}}
                         <div class="mt-6 flex justify-between">
                             <button type="button" @click="currentStep = 2"

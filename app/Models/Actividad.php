@@ -32,7 +32,8 @@ class Actividad extends Model implements Auditable
         'descripcion',
         'cliente',
         'jefe_inmediato_id',
-        'fecha_ejecucion',
+        'fecha_inicio',
+        'fecha_fin',
         'hora_inicio',
         'hora_fin',
         'estado',
@@ -94,5 +95,54 @@ class Actividad extends Model implements Auditable
     {
         return $this->estado === self::ESTADO_PENDIENTE || 
                $this->estado === self::ESTADO_APROBADA_COORDINADOR;
+    }
+    
+    /**
+     * Calcula la duración total en horas y minutos entre fecha/hora inicio y fecha/hora fin
+     *
+     * @return float Duración en horas (con decimales para los minutos)
+     */
+    public function calcularDuracionHoras(): float
+    {
+        $inicio = \Carbon\Carbon::parse($this->fecha_inicio . ' ' . $this->hora_inicio);
+        $fin = \Carbon\Carbon::parse($this->fecha_fin . ' ' . $this->hora_fin);
+        
+        // Si la fecha/hora de fin es anterior a la fecha/hora de inicio, consideramos que es inválido
+        if ($fin->lt($inicio)) {
+            return 0;
+        }
+        
+        // Calculamos la diferencia en minutos desde inicio hasta fin
+        $diffMinutos = $inicio->diffInMinutes($fin);
+        
+        // Convertir a horas con 2 decimales
+        return round($diffMinutos / 60, 2);
+    }
+    
+    /**
+     * Determina si las horas extras ocurren en un día festivo o fin de semana
+     *
+     * @return bool
+     */
+    public function esDiaFestivo(): bool
+    {
+        $fechaInicio = \Carbon\Carbon::parse($this->fecha_inicio);
+        $fechaFin = \Carbon\Carbon::parse($this->fecha_fin);
+        
+        // Si alguna de las fechas es festivo o fin de semana, consideramos toda la actividad como festiva
+        return \App\Services\FestivosColombiaService::esFestivo($fechaInicio) || 
+               \App\Services\FestivosColombiaService::esFestivo($fechaFin) || 
+               \App\Services\FestivosColombiaService::esFinDeSemana($fechaInicio) || 
+               \App\Services\FestivosColombiaService::esFinDeSemana($fechaFin);
+    }
+    
+    /**
+     * Obtiene el tipo de hora extra (normal o festiva)
+     *
+     * @return string
+     */
+    public function getTipoHoraExtra(): string
+    {
+        return $this->esDiaFestivo() ? 'Festiva' : 'Normal';
     }
 }
