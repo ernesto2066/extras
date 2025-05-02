@@ -89,7 +89,9 @@ class ActividadResource extends Resource
                                 Forms\Components\Group::make([
                                     Forms\Components\DatePicker::make('fecha_inicio')
                                         ->label('Fecha de Inicio')
-                                        ->required(),
+                                        ->required()
+                                        ->maxDate(now())
+                                        ->helperText('No se pueden registrar horas extras para fechas futuras'),
                                     Forms\Components\TimePicker::make('hora_inicio')
                                         ->label('Hora de Inicio')
                                         ->required()
@@ -98,7 +100,9 @@ class ActividadResource extends Resource
                                 Forms\Components\Group::make([
                                     Forms\Components\DatePicker::make('fecha_fin')
                                         ->label('Fecha de Fin')
-                                        ->required(),
+                                        ->required()
+                                        ->maxDate(now())
+                                        ->helperText('No se pueden registrar horas extras para fechas futuras'),
                                     Forms\Components\TimePicker::make('hora_fin')
                                         ->label('Hora de Fin')
                                         ->required()
@@ -239,8 +243,10 @@ class ActividadResource extends Resource
                     ->modalDescription('Esta acción indica que la hora extra ha sido revisada y aprobada por un coordinador.')
                     ->form([
                         Forms\Components\Textarea::make('comentarios')
-                            ->label('Comentarios (opcional)')
-                            ->placeholder('Añada algún comentario si es necesario')
+                            ->label('Comentarios')
+                            ->placeholder('Detalle el motivo de la aprobación')
+                            ->required()
+                            ->helperText('Debe incluir un comentario al aprobar las horas extras')
                             ->rows(3),
                         Forms\Components\Hidden::make('nivel')->default('coordinador'),
                     ])
@@ -294,8 +300,10 @@ class ActividadResource extends Resource
                     ->modalDescription('Esta acción indica que la hora extra ha sido revisada y aprobada definitivamente.')
                     ->form([
                         Forms\Components\Textarea::make('comentarios')
-                            ->label('Comentarios (opcional)')
-                            ->placeholder('Añada algún comentario si es necesario')
+                            ->label('Comentarios')
+                            ->placeholder('Detalle el motivo de la aprobación final')
+                            ->required()
+                            ->helperText('Debe incluir un comentario al aprobar las horas extras')
                             ->rows(3),
                         Forms\Components\Hidden::make('nivel')->default('final'),
                     ])

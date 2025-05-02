@@ -69,8 +69,15 @@ class ExtraHoursForm extends Component
 
         $fechaHoraInicio = Carbon::parse($this->fecha_inicio . ' ' . $this->hora_inicio);
         $fechaHoraFin = Carbon::parse($this->fecha_fin . ' ' . $this->hora_fin);
+        $ahora = Carbon::now();
         
-        if ($fechaHoraFin->lte($fechaHoraInicio)) {
+        // Validar que las fechas no sean futuras
+        if ($fechaHoraInicio->gt($ahora) || $fechaHoraFin->gt($ahora)) {
+            session()->flash('warning', 'No se pueden registrar horas extras para fechas futuras.');
+            return;
+        }
+        
+        if ($fechaHoraFin->lt($fechaHoraInicio)) {
             session()->flash('warning', 'La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio.');
             return;
         }
